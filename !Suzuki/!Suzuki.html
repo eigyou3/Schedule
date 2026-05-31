@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule┃KOMAI HOME</title>
+<meta property="og:title" content="Schedule┃KOMAI HOME">
+<meta property="og:description" content="スケジュールをWebページで作成し共有しています✨ 是非ブックマークなどして確認用としてご覧ください🙇">
+<meta property="og:image" content="https://eigyou3.github.io/Schedule/!Suzuki/ogp.png">
+<meta property="og:url" content="https://eigyou3.github.io/Schedule/!Suzuki/!Suzuki.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="favicon.png">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f7f6f3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',sans-serif}
+.header{position:sticky;top:0;z-index:100;background:rgba(247,246,243,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:0.5px solid #e8e8e5;padding:10px 1rem}
+.header-inner{max-width:460px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.header-title{font-size:14px;font-weight:500;color:#1a1a1a}
+.header-sub{font-size:11px;color:#aaa;margin-top:1px}
+.wrap{max-width:460px;margin:0 auto;padding:1.5rem 1rem 4rem}
+.month-label{font-size:11px;font-weight:500;color:#aaa;letter-spacing:.08em;padding:1.5rem 0 8px}
+.list{display:flex;flex-direction:column;gap:2px}
+.row{display:flex;align-items:stretch;border-radius:12px;overflow:hidden}
+.row.past{opacity:0.3}
+.date-block{width:64px;flex-shrink:0;padding:10px 12px;text-align:center;background:#f0efe9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.row.today .date-block{background:#ddeaf8}
+.dn{font-size:18px;font-weight:500;color:#1a1a1a;line-height:1}
+.dd{font-size:11px;color:#999;margin-top:1px}
+.sun .dn,.sun .dd{color:#c0392b}
+.sat .dn,.sat .dd{color:#2980b9}
+.hol .dn,.hol .dd{color:#c0392b}
+.today-dot{width:5px;height:5px;border-radius:50%;background:#378ADD;margin-top:3px}
+.content-block{flex:1;padding:8px 14px;display:flex;align-items:center;min-height:44px;background:#fff;border-top:0.5px solid #e8e8e5;border-right:0.5px solid #e8e8e5;border-bottom:0.5px solid #e8e8e5;border-radius:0 12px 12px 0}
+.row.today .content-block{border-color:#b5d4f4;border-left:2px solid #378ADD}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:400;white-space:nowrap}
+.t-elec{background:#E6F1FB;color:#0C447C}
+.t-water{background:#E1F5EE;color:#085041}
+.t-heat{background:#FAEEDA;color:#633806}
+.t-clean{background:#EAF3DE;color:#27500A}
+.t-screen{background:#FAEEDA;color:#854F0B}
+.t-foundation{background:#e8e0d5;color:#3d2b1f}
+.t-carpenter{background:#f0e6d3;color:#5c3a1e}
+.t-admin{background:#fef3c7;color:#78350f}
+.tag-sub{font-size:10px;opacity:0.55;margin-left:4px;font-weight:400}
+.t-inspect{background:#EEEDFE;color:#3C3489}
+.t-exam{background:#FCEBEB;color:#791F1F}
+.t-todo{background:#fce4ec;color:#880e4f}
+.t-todo .tag-del{font-size:10px;opacity:0.5;margin-left:5px;cursor:pointer}
+.t-todo .tag-del:hover{opacity:1}
+.empty{font-size:12px;color:#bbb}
+.note-block{margin-top:2rem;padding:14px 16px;border-radius:12px;border:0.5px solid #e8e8e5;background:#fff}
+.note-row{font-size:12px;color:#666;line-height:1.8;display:flex;gap:8px;align-items:baseline}
+.note-star{color:#E24B4A;flex-shrink:0}
+
+/* ToDoフォーム */
+.todo-section{margin-top:1.5rem}
+.todo-title{font-size:11px;font-weight:500;color:#aaa;letter-spacing:.08em;margin-bottom:8px}
+.todo-form{background:#fff;border:0.5px solid #e8e8e5;border-radius:12px;padding:14px}
+.todo-row{display:flex;gap:8px;margin-bottom:8px}
+.todo-select{flex:0 0 80px;padding:8px 10px;border:0.5px solid #e8e8e5;border-radius:8px;font-size:13px;background:#fafaf8;color:#1a1a1a;outline:none}
+.todo-input{flex:1;padding:8px 12px;border:0.5px solid #e8e8e5;border-radius:8px;font-size:13px;background:#fafaf8;color:#1a1a1a;outline:none}
+.todo-input:focus,.todo-select:focus{border-color:#378ADD;background:#fff}
+.todo-btn{width:100%;padding:10px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}
+.todo-btn:hover{background:#333}
+.todo-btn:disabled{background:#ccc;cursor:not-allowed}
+.todo-msg{font-size:11px;color:#27AE60;text-align:center;margin-top:6px;min-height:16px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">鈴木さん用　カレンダー</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div id="list"></div>
+
+  <!-- ToDoフォーム -->
+  <div class="todo-section">
+    <div class="todo-title">やることを追加する</div>
+    <div class="todo-form">
+      <div class="todo-row">
+        <select class="todo-select" id="todo-month">
+          <option value="6" selected>6月</option>
+          <option value="7">7月</option>
+        </select>
+        <select class="todo-select" id="todo-day"></select>
+      </div>
+      <div class="todo-row">
+        <input class="todo-input" id="todo-text" type="text" placeholder="例：◯◯へ現調しにいく" maxlength="40">
+      </div>
+      <button class="todo-btn" id="todo-submit" onclick="addTodo()">追加する</button>
+      <div class="todo-msg" id="todo-msg"></div>
+    </div>
+  </div>
+
+  <div class="note-block" style="margin-top:1rem">
+    <div class="note-row"><span class="note-star">★</span><span>翌週のスケジュールは<strong>前の週の間</strong>に入力しておくようにします</span></div>
+    <div class="note-row"><span class="note-star">★</span><span>自身のメモなどは<strong>上記の【追加する】</strong>を使ってください</span></div>
+  </div>
+</div>
+
+<div id="debug-msg" style="display:none;margin:1rem;padding:12px;background:#fee;border-radius:8px;font-size:12px;color:#900;word-break:break-all"></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA082u0IYMGYbtf1NfnuzYxUquTDLK8NgY",
+  authDomain: "komai-schedule.firebaseapp.com",
+  projectId: "komai-schedule",
+  storageBucket: "komai-schedule.firebasestorage.app",
+  messagingSenderId: "1021007121185",
+  appId: "1:1021007121185:web:580d33e28193f707b5cc60"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function showDebug(msg) {
+  const el = document.getElementById('debug-msg');
+  el.style.display = 'block';
+  el.textContent = 'エラー: ' + msg;
+}
+
+// 施主ID（このファイルごとに固有）
+const CLIENT_ID = "Ov2gkr37eb1";
+const todosRef = collection(db, "todos", CLIENT_ID, "items");
+
+// ToDoをリアルタイム監視
+onSnapshot(query(todosRef, orderBy("createdAt")), (snap) => {
+  window._todos = {};
+  snap.forEach(d => {
+    const data = d.data();
+    const key = `${data.month}-${data.day}`;
+    if (!window._todos[key]) window._todos[key] = [];
+    window._todos[key].push({ id: d.id, text: data.text });
+  });
+  renderCalendar();
+}, (err) => {
+  showDebug('Firestore接続エラー: ' + err.message);
+  renderCalendar();
+});
+
+// グローバルに公開
+window.addTodo = async function() {
+  const month = parseInt(document.getElementById('todo-month').value);
+  const day = parseInt(document.getElementById('todo-day').value);
+  const text = document.getElementById('todo-text').value.trim();
+  const btn = document.getElementById('todo-submit');
+  const msg = document.getElementById('todo-msg');
+  if (!text) { msg.style.color='#E24B4A'; msg.textContent='内容を入力してください'; return; }
+  btn.disabled = true;
+  try {
+    await addDoc(todosRef, { month, day, text, createdAt: Date.now() });
+    document.getElementById('todo-text').value = '';
+    msg.style.color='#27AE60';
+    msg.textContent = `${month}月${day}日に追加しました`;
+    setTimeout(() => msg.textContent = '', 3000);
+  } catch(e) {
+    msg.style.color='#E24B4A';
+    msg.textContent = '保存に失敗しました';
+  }
+  btn.disabled = false;
+};
+
+window.deleteTodo = async function(id) {
+  await deleteDoc(doc(db, "todos", CLIENT_ID, "items", id));
+};
+
+// 日付セレクト更新
+function updateDaySelect() {
+  const m = parseInt(document.getElementById('todo-month').value);
+  const days = new Date(2026, m, 0).getDate();
+  const sel = document.getElementById('todo-day');
+  const cur = sel.value;
+  sel.innerHTML = '';
+  for (let d = 1; d <= days; d++) {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d + '日';
+    if (d == cur) o.selected = true;
+    sel.appendChild(o);
+  }
+}
+document.getElementById('todo-month').addEventListener('change', updateDaySelect);
+updateDaySelect();
+
+// ============================================================
+// 工程データ
+// ============================================================
+const tasks = [
+  {label:"研修",cls:"t-inspect",entries:[
+    ["朝礼",6,1],["AM-社長、漢那係長から伝達事項",6,1],["PM-現場廻り",6,1],["営業活動の全体像を掴む",6,2],["AM-ご成約までの流れ",6,5],["PM-現場廻り",6,5],["モデルハウス",6,6,7],
+    ["朝礼",6,8],
+    ["朝礼 & 全体会議",6,15],  
+    ["朝礼",6,22],
+    ["朝礼",6,29],
+  ]},
+  {label:"休日",cls:"",entries:[
+    [6,3,4],[6,10,11],[6,17,18],[6,24,25],
+    ["入社一ヶ月🎉",7,1],[7,2],[7,8,9],[7,15],[7,22,23],[7,29,30]
+  ]},
+  {label:"お客様対応",cls:"t-admin",entries:[
+    ["大沼様つなぎ融資契約日",7,3],["梅本様引渡予定日",7,10],["大沼様土地決済",7,13]
+  ]},
+
+  {label:"土地現地調査",cls:"t-inspect",entries:[[]]},
+  {label:"見積",cls:"t-exam",entries:[[]]},
+  {label:"基礎工事",cls:"t-foundation",entries:[]},
+  {label:"大工工事",cls:"t-carpenter",entries:[]},
+  {label:"電気工事",cls:"t-elec",entries:[]},
+  {label:"給排水・換気",cls:"t-water",entries:[]},
+  {label:"暖房工事",cls:"t-heat",entries:[]},
+  {label:"内装工事",cls:"t-inspect",entries:[]},
+  {label:"ガス工事",cls:"t-admin",entries:[]},
+  {label:"美装",cls:"t-clean",entries:[]},
+  {label:"サッシ工事",cls:"t-screen",entries:[]},
+  {label:"協力業者合同点検",cls:"t-admin",entries:[]},
+  {label:"完了検査準備",cls:"t-inspect",entries:[]},
+  {label:"完了検査",cls:"t-exam",entries:[]},
+  {label:"お引渡し可能日程",cls:"t-admin",entries:[]},
+];
+
+const months = [
+  {year:2026, month:6, label:'6月', holidays:new Set()},
+  {year:2026, month:7, label:'7月', holidays:new Set()},
+];
+
+function expandEntries(entries) {
+  const result = [];
+  entries.forEach(e => {
+    const hasSub = typeof e[0] === 'string';
+    const sub = hasSub ? e[0] : null;
+    const [m, s, end] = hasSub ? e.slice(1) : e;
+    if (end === undefined) result.push({m, d:s, sub});
+    else for (let d = s; d <= end; d++) result.push({m, d, sub});
+  });
+  return result;
+}
+
+const wd = ['日','月','火','水','木','金','土'];
+function dow(y,m,d) { return new Date(y,m-1,d).getDay(); }
+function daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
+
+const now = new Date();
+const todayY = now.getFullYear(), todayM = now.getMonth()+1, todayD = now.getDate();
+function isToday(y,m,d) { return y===todayY&&m===todayM&&d===todayD; }
+function isPast(y,m,d) { return new Date(y,m-1,d) < new Date(todayY,todayM-1,todayD); }
+
+const evMap = {};
+tasks.forEach(t => {
+  expandEntries(t.entries).forEach(({m,d,sub}) => {
+    const k = `${m}-${d}`;
+    if (!evMap[k]) evMap[k] = [];
+    evMap[k].push({label:t.label, cls:t.cls, sub});
+  });
+});
+
+window._todos = {};
+
+function renderCalendar() {
+  let html = '', scrollId = null;
+  months.forEach(({year, month, label, holidays}) => {
+    html += `<div class="month-label">${year}年${label}</div><div class="list">`;
+    const total = daysInMonth(year, month);
+    for (let d = 1; d <= total; d++) {
+      const w = dow(year,month,d), hol = holidays.has(d);
+      const evs = evMap[`${month}-${d}`] || [];
+      const todos = (window._todos[`${month}-${d}`] || []);
+      const today = isToday(year,month,d), past = isPast(year,month,d);
+      const dc = hol?'hol':w===0?'sun':w===6?'sat':'';
+      const rc = 'row'+(past?' past':today?' today':'');
+      const id = `d${year}-${month}-${d}`;
+      if (today && !scrollId) scrollId = id;
+      html += `<div class="${rc}" id="${id}">`;
+      html += `<div class="date-block ${dc}"><span class="dn">${d}</span><span class="dd">${wd[w]}</span>${today?'<span class="today-dot"></span>':''}</div>`;
+      html += `<div class="content-block"><div class="tags">`;
+      if (evs.length || todos.length) {
+        evs.forEach(e => html += `<span class="tag ${e.cls}">${e.label}${e.sub?`<span class="tag-sub">${e.sub}</span>`:''}</span>`);
+        todos.forEach(t => html += `<span class="tag t-todo">${t.text}<span class="tag-del" onclick="deleteTodo('${t.id}')">✕</span></span>`);
+      } else {
+        html += `<span class="empty">—</span>`;
+      }
+      html += `</div></div></div>`;
+    }
+    html += `</div>`;
+  });
+  document.getElementById('list').innerHTML = html;
+  if (scrollId) {
+    setTimeout(() => {
+      const el = document.getElementById(scrollId);
+      if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 200);
+  }
+}
+
+renderCalendar();
+</script>
+</body>
+</html>
