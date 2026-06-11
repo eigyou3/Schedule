@@ -51,22 +51,26 @@ body{background:#f7f6f3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 .t-todo .tag-del{font-size:10px;opacity:0.5;margin-left:5px;cursor:pointer}
 .t-todo .tag-del:hover{opacity:1}
 .empty{font-size:12px;color:#bbb}
-.note-block{margin-top:2rem;padding:14px 16px;border-radius:12px;border:0.5px solid #e8e8e5;background:#fff}
+.note-block{margin-top:1rem;padding:14px 16px;border-radius:12px;border:0.5px solid #e8e8e5;background:#fff}
 .note-row{font-size:12px;color:#666;line-height:1.8;display:flex;gap:8px;align-items:baseline}
 .note-star{color:#E24B4A;flex-shrink:0}
 
-/* ToDoフォーム */
-.todo-section{margin-top:1.5rem}
-.todo-title{font-size:11px;font-weight:500;color:#aaa;letter-spacing:.08em;margin-bottom:8px}
-.todo-form{background:#fff;border:0.5px solid #e8e8e5;border-radius:12px;padding:14px}
-.todo-row{display:flex;gap:8px;margin-bottom:8px}
-.todo-select{flex:0 0 80px;padding:8px 10px;border:0.5px solid #e8e8e5;border-radius:8px;font-size:13px;background:#fafaf8;color:#1a1a1a;outline:none}
-.todo-input{flex:1;padding:8px 12px;border:0.5px solid #e8e8e5;border-radius:8px;font-size:13px;background:#fafaf8;color:#1a1a1a;outline:none}
+/* 追尾式ToDoフッターフォーム */
+.todo-section{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:rgba(247,246,243,0.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:0.5px solid #e8e8e5;padding:12px 1rem;box-shadow:0 -2px 10px rgba(0,0,0,0.05)}
+.todo-inner{max-width:460px;margin:0 auto}
+.todo-title{font-size:11px;font-weight:500;color:#aaa;letter-spacing:.08em;margin-bottom:6px}
+.todo-form{display:flex;flex-direction:column;gap:6px}
+.todo-row{display:flex;gap:6px}
+.todo-select{flex:0 0 80px;padding:6px 10px;border:0.5px solid #e8e8e5;border-radius:8px;font-size:13px;background:#fafaf8;color:#1a1a1a;outline:none}
+.todo-input{flex:1;padding:6px 12px;border:0.5px solid #e8e8e5;border-radius:8px;font-size:13px;background:#fafaf8;color:#1a1a1a;outline:none}
 .todo-input:focus,.todo-select:focus{border-color:#378ADD;background:#fff}
-.todo-btn{width:100%;padding:10px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}
+.todo-btn{width:100%;padding:8px;background:#1a1a1a;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}
 .todo-btn:hover{background:#333}
 .todo-btn:disabled{background:#ccc;cursor:not-allowed}
-.todo-msg{font-size:11px;color:#27AE60;text-align:center;margin-top:6px;min-height:16px}
+.todo-msg{font-size:11px;color:#27AE60;text-align:center;margin-top:4px;min-height:16px}
+
+/* フッターに隠れないようにカレンダーの下部に余白を追加 */
+#list{padding-bottom:140px}
 </style>
 </head>
 <body>
@@ -74,7 +78,7 @@ body{background:#f7f6f3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 <div class="header">
   <div class="header-inner">
     <div>
-      <div class="header-title">井上様　カレンダー</div>
+      <div class="header-title">井上様 カレンダー</div>
     </div>
   </div>
 </div>
@@ -82,15 +86,21 @@ body{background:#f7f6f3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
 <div class="wrap">
   <div id="list"></div>
 
-  <!-- ToDoフォーム -->
-  <div class="todo-section">
+  <div class="note-block">
+    <div class="note-row"><span class="note-star">★</span><span>最終金消の実行日の<strong>10日以上前</strong>に最終金消の契約が必要です</span></div>
+    <div class="note-row"><span class="note-star">★</span><span>引渡し前日までに<strong>最終金消の実行</strong>が必要です</span></div>
+  </div>
+</div>
+
+<div class="todo-section">
+  <div class="todo-inner">
     <div class="todo-title">やることを追加する</div>
     <div class="todo-form">
       <div class="todo-row">
         <select class="todo-select" id="todo-month">
           <option value="4">4月</option>
           <option value="5">5月</option>
-          <option value="6" selected>6月</option>
+          <option value="6">6月</option>
         </select>
         <select class="todo-select" id="todo-day"></select>
       </div>
@@ -101,16 +111,10 @@ body{background:#f7f6f3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',
       <div class="todo-msg" id="todo-msg"></div>
     </div>
   </div>
-
-  <div class="note-block" style="margin-top:1rem">
-    <div class="note-row"><span class="note-star">★</span><span>最終金消の実行日の<strong>10日以上前</strong>に最終金消の契約が必要です</span></div>
-    <div class="note-row"><span class="note-star">★</span><span>引渡し前日までに<strong>最終金消の実行</strong>が必要です</span></div>
-  </div>
 </div>
 
 <div id="debug-msg" style="display:none;margin:1rem;padding:12px;background:#fee;border-radius:8px;font-size:12px;color:#900;word-break:break-all"></div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
@@ -133,9 +137,13 @@ function showDebug(msg) {
   el.textContent = 'エラー: ' + msg;
 }
 
-// 施主ID（このファイルごとに固有）
+// 施主ID
 const CLIENT_ID = "Ov2gkr37eb1";
 const todosRef = collection(db, "todos", CLIENT_ID, "items");
+
+// 今日の日付を取得
+const now = new Date();
+const todayY = now.getFullYear(), todayM = now.getMonth()+1, todayD = now.getDate();
 
 // ToDoをリアルタイム監視
 onSnapshot(query(todosRef, orderBy("createdAt")), (snap) => {
@@ -179,11 +187,11 @@ window.deleteTodo = async function(id) {
 };
 
 // 日付セレクト更新
-function updateDaySelect() {
+function updateDaySelect(defaultDay = null) {
   const m = parseInt(document.getElementById('todo-month').value);
   const days = new Date(2026, m, 0).getDate();
   const sel = document.getElementById('todo-day');
-  const cur = sel.value;
+  const cur = defaultDay !== null ? defaultDay : sel.value;
   sel.innerHTML = '';
   for (let d = 1; d <= days; d++) {
     const o = document.createElement('option');
@@ -192,14 +200,36 @@ function updateDaySelect() {
     sel.appendChild(o);
   }
 }
-document.getElementById('todo-month').addEventListener('change', updateDaySelect);
-updateDaySelect();
+
+// 初期日付の設定処理
+function initFormDate() {
+  const monthSelect = document.getElementById('todo-month');
+  
+  // セレクトボックスの選択肢の中に今日の「月」が存在するか確認
+  let hasTodayMonth = false;
+  for (let i = 0; i < monthSelect.options.length; i++) {
+    if (parseInt(monthSelect.options[i].value) === todayM) {
+      hasTodayMonth = true;
+      break;
+    }
+  }
+
+  if (hasTodayMonth) {
+    monthSelect.value = todayM;
+    updateDaySelect(todayD);
+  } else {
+    updateDaySelect();
+  }
+}
+
+document.getElementById('todo-month').addEventListener('change', () => updateDaySelect());
+initFormDate();
 
 // ============================================================
 // 工程データ
 // ============================================================
 const tasks = [
-  {label:"お打ち合わせ",cls:"t-admin",entries:[["初回（はじめまして🙇‍♂️）",4,26],["図面打合せ",5,4],["図面打合せ",5,10],["完成見学",5,24],["図面打合せ",5,26],["13:30_見積照会",6,20]]},
+  {label:"お打ち合わせ",cls:"t-admin",entries:[["初回（はじめまして🙇‍♂️）",4,26],["図面打合せ",5,4],["図面打合せ",5,10],["完成見学",5,24],["図面打合せ",5,26],["見積提出予定日",6,14]]},
   {label:"土地現地調査",cls:"t-inspect",entries:[[5,11,15],["レポート提出",5,16]]},
   {label:"見積",cls:"t-exam",entries:[["準備期間-図面修正など",6,1],["依頼日",6,2],["業者見積期間",6,3,8],["業者見積締切日",6,9],["弊社積算",6,10,11],["積算完了日",6,12],["見積を確認してまとめます！",6,13]]},
   {label:"基礎工事",cls:"t-foundation",entries:[]},
@@ -239,8 +269,6 @@ const wd = ['日','月','火','水','木','金','土'];
 function dow(y,m,d) { return new Date(y,m-1,d).getDay(); }
 function daysInMonth(y,m) { return new Date(y,m,0).getDate(); }
 
-const now = new Date();
-const todayY = now.getFullYear(), todayM = now.getMonth()+1, todayD = now.getDate();
 function isToday(y,m,d) { return y===todayY&&m===todayM&&d===todayD; }
 function isPast(y,m,d) { return new Date(y,m-1,d) < new Date(todayY,todayM-1,todayD); }
 
